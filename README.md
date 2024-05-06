@@ -20,7 +20,9 @@ Telegram-бот "Мини-банка" - это фронтенд-часть пр�
 
 ### Архитектура системы
 
-<div hidden>
+![](src/main/resources/plantuml/architecture.png)
+
+<details>
 
 ```plantuml
 @startuml architecture
@@ -43,9 +45,7 @@ MiddleService --> TelegramBot: HTTP response
 deactivate MiddleService
 @enduml
 ```
-</div>
-
-![](src/main/resources/plantuml/architecture.png)
+</details>
 
 
 ### Интеграции
