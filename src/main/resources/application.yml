@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: gladskoy-telegram-bot
+
+telegram-bot:
+  name: ${BOT_NAME}
+  token: ${BOT_TOKEN}
