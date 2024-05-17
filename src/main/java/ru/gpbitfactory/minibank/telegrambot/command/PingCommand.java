@@ -8,13 +8,11 @@ import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
 
-import static ru.gpbitfactory.minibank.telegrambot.command.Command.PING;
-
 @Component
 public class PingCommand extends BotCommand {
 
     public PingCommand() {
-        super(PING.getValue(), PING.getDescription());
+        super("ping", "Возвращает в ответ строку \"pong\"");
     }
 
     @Override

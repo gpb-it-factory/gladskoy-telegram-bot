@@ -8,13 +8,11 @@ import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
 
-import static ru.gpbitfactory.minibank.telegrambot.command.Command.START;
-
 @Component
 public class StartCommand extends BotCommand {
 
     public StartCommand() {
-        super(START.getValue(), START.getDescription());
+        super("start", "Начало работы с ботом");
     }
 
     @Override
