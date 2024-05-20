@@ -1,1 +1,7 @@
+#Directories
 .idea
+.gradle
+build
+
+# Files
+*dev.yml
