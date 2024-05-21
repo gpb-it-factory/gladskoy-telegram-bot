@@ -1,5 +1,7 @@
 # Telegram-бот приложения Мини-банк
 
+[![Java Gradle Build & Test](https://github.com/gpb-it-factory/gladskoy-telegram-bot/actions/workflows/gradle-ci.yml/badge.svg)](https://github.com/gpb-it-factory/gladskoy-telegram-bot/actions/workflows/gradle-ci.yml)
+
 Telegram-бот "Мини-банка" - это фронтенд-часть приложения разрабатываемого в рамках программы [GPB IT Factory Backend 2024](https://gpb.fut.ru/itfactory/backend).
 Бот инициирует запросы пользователей в Middle-слой, где происходит их дальнейшая обработка.
 
