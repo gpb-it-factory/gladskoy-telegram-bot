@@ -20,13 +20,17 @@ Telegram-бот "Мини-банка" - это фронтенд-часть пр�
     ```bash
     git clone git@github.com:gpb-it-factory/gladskoy-telegram-bot.git
     ```
-3. Запустить приложение (`telegram_bot_name` будет создано при получении API-токена)
+3. Перейти в директорию с проектом
+   ```bash
+   cd gladskoy-telegram-bot
+   ```
+4. Запустить приложение (`telegram_bot_name` будет создано при получении API-токена)
     ```bash
     BOT_NAME={telegram_bot_name} \
     BOT_TOKEN={telegram_bot_token} \
     ./gradlew bootRun
     ```
-4. Найти в Telegram бота по имени `@{telegram_bot_name}` (пример `@GpbITFactoryGladskoyTelegramBot`)
+5. Найти в Telegram бота по имени `@{telegram_bot_name}` (пример `@GpbITFactoryGladskoyTelegramBot`)
 
 
 ### Как использовать
