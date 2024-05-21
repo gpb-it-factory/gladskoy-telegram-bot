@@ -81,5 +81,5 @@ deactivate TelegramBot
 
 ### Интеграции
 
-- [Middle Service]() // TBD
+- [Middle Service](https://github.com/gpb-it-factory/gladskoy-middle-service)
 - [Backend Service]() // TBD
