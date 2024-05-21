@@ -2,9 +2,9 @@ name: Java Gradle Build & Test
 
 on:
   pull_request:
-    branches: [ $default-branch ]
+    branches: [ "trunk" ]
   push:
-    branches: [ $default-branch ]
+    branches: [ "trunk" ]
 
 jobs:
   build:
