@@ -2,9 +2,12 @@ name: Java Gradle Build & Test
 
 on:
   pull_request:
-    branches: [ $default-branch ]
+    branches: [ "trunk" ]
   push:
-    branches: [ $default-branch ]
+    branches: [ "trunk" ]
+
+permissions:
+  pull-requests: write
 
 jobs:
   build:
@@ -21,6 +24,8 @@ jobs:
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
+        with:
+          add-job-summary-as-pr-comment: on-failure
 
       - name: Build project
         run: ./gradlew build
@@ -41,6 +46,8 @@ jobs:
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
+        with:
+          add-job-summary-as-pr-comment: on-failure
 
       - name: Run the Gradle tests
         run: ./gradlew test
