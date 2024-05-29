@@ -28,7 +28,7 @@ jobs:
           add-job-summary-as-pr-comment: on-failure
 
       - name: Build project
-        run: ./gradlew build
+        run: ./gradlew build -x test
       - run: echo "Build job's status is ${{ job.status }}."
 
   test:
