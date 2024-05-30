@@ -5,9 +5,11 @@ import lombok.SneakyThrows;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.telegram.telegrambots.client.okhttp.OkHttpTelegramClient;
 import org.telegram.telegrambots.extensions.bots.commandbot.commands.BotCommand;
 import org.telegram.telegrambots.longpolling.TelegramBotsLongPollingApplication;
 import org.telegram.telegrambots.longpolling.interfaces.LongPollingUpdateConsumer;
+import org.telegram.telegrambots.meta.generics.TelegramClient;
 import ru.gpbitfactory.minibank.telegrambot.handler.CommandsHandler;
 
 import java.util.List;
@@ -20,8 +22,13 @@ public class TelegramBotConfiguration {
     private final TelegramBotProperties properties;
 
     @Bean
-    public LongPollingUpdateConsumer longPollingUpdateConsumer(List<BotCommand> commands) {
-        return new CommandsHandler(properties.getToken(), properties.getName(), commands);
+    public TelegramClient telegramClient() {
+        return new OkHttpTelegramClient(properties.getToken());
+    }
+
+    @Bean
+    public LongPollingUpdateConsumer longPollingUpdateConsumer(TelegramClient telegramClient, List<BotCommand> commands) {
+        return new CommandsHandler(telegramClient, properties.isAllowCommandsWithParameters(), properties.getName(), commands);
     }
 
     @Bean

@@ -11,4 +11,5 @@ public class TelegramBotProperties {
 
     private String name;
     private String token;
+    private boolean allowCommandsWithParameters;
 }
