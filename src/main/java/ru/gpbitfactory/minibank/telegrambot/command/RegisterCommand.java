@@ -29,24 +29,24 @@ public class RegisterCommand extends BotCommand {
     public void execute(TelegramClient telegramClient, User user, Chat chat, String[] strings) {
         var userId = user.getId();
         log.debug("Поступил запрос на регистрацию клиента {}", userId);
-        var createClientRequest = CreateClientRequest.builder()
-                .telegramUserId(userId)
-                .build();
         var responseBuilder = SendMessage.builder().chatId(chat.getId());
 
         try {
+            var createClientRequest = CreateClientRequest.builder()
+                    .telegramUserId(userId)
+                    .build();
             middleService.createNewClient(createClientRequest);
-            responseBuilder.text("Вы успешно зарегистрированы!").build();
+            responseBuilder.text("Вы успешно зарегистрированы!");
             log.debug("Клиент {} успешно зарегистрирован", userId);
         } catch (FeignException e) {
-            setResponseToBuilder(userId, e, responseBuilder);
+            setMessageToResponseBuilder(userId, e, responseBuilder);
             log.error("Во время регистрации клиента возникла непредвиденная ситуация", e);
         }
 
         telegramClient.execute(responseBuilder.build());
     }
 
-    private void setResponseToBuilder(long userId, FeignException e, SendMessageBuilder builder) {
+    private void setMessageToResponseBuilder(long userId, FeignException e, SendMessageBuilder builder) {
         var verificationMessage = String.format("Пользователь с telegramUserId: %s уже зарегистрирован", userId);
         var clientIsAlreadyRegistered = e.getMessage().contains(verificationMessage);
 
