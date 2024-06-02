@@ -43,7 +43,7 @@ Telegram-бот "Мини-банка" - это фронтенд-часть пр�
 
 ### Архитектура системы
 
-![](src/main/resources/plantuml/architecture.png)
+![](src/main/resources/project/architecture.png)
 
 <details>
 
