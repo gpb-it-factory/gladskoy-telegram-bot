@@ -34,6 +34,8 @@ jobs:
   test:
     needs: [ build ]
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -52,3 +54,31 @@ jobs:
       - name: Run the Gradle tests
         run: ./gradlew test
       - run: echo "Test job's status is ${{ job.status }}."
+
+      - name: Run Test Coverage
+        run: ./gradlew jacocoTestReport
+
+      - name: Generate JaCoCo Badge
+        uses: cicirello/jacoco-badge-generator@v2
+        with:
+          jacoco-csv-file: build/reports/jacoco/test/jacocoTestReport.csv
+          generate-coverage-badge: true
+          coverage-badge-filename: instructions.svg
+          coverage-label: Instructions coverage
+          generate-branches-badge: true
+          branches-badge-filename: branches.svg
+          branches-label: Branches coverage
+
+      - name: Commit the badges (if it changed)
+        if: ${{ github.head_ref != 'trunk' }}
+        run: |
+          echo "Current branch: ${{ github.head_ref }}"
+          if [[ $(git status --porcelain) ]]; then
+            git config --global user.name 'Github Actions Bot'
+            git config --global user.email 'github-actions-bot@users.noreply.github.com'
+            git fetch origin ${{ github.head_ref }}
+            git checkout ${{ github.head_ref }}
+            git add -A
+            git commit -m "Добавлены автоматически сгенерированные бейджи JaCoCo Test Coverage"
+            git push
+          fi
