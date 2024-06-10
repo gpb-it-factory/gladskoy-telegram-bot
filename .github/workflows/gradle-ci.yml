@@ -74,8 +74,8 @@ jobs:
         run: |
           echo "Current branch: ${{ github.head_ref }}"
           if [[ $(git status --porcelain) ]]; then
-            git config --global user.name 'Github Actions Bot'
-            git config --global user.email 'github-actions-bot@users.noreply.github.com'
+            git config --global user.name 'github-actions[bot]'
+            git config --global user.email '41898282+github-actions[bot]@users.noreply.github.com'
             git fetch origin ${{ github.head_ref }}
             git checkout ${{ github.head_ref }}
             git add -A
