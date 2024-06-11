@@ -73,7 +73,12 @@ test {
 }
 
 jacocoTestReport {
-    classDirectories.from("$rootDir/src/main/java")
+	sourceDirectories.setFrom(
+			"$projectDir/src/main/java/ru/gpbitfactory/minibank/telegrambot"
+	)
+	classDirectories.setFrom(
+			"$projectDir/build/classes/java/main/ru/gpbitfactory/minibank/telegrambot"
+	)
     reports {
         csv.required = true
     }
