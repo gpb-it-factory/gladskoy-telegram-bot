@@ -18,7 +18,7 @@ class StartCommandTest extends AbstractUpdateConsumerTest {
         var expectedSendMessage = buildExpectedSendMessage("""
                 Привет, Test User!
                 Добро пожаловать в Мини-Банк.\n
-                """);
+                Для начала работы необходимо зарегистрироваться, для этого тебе нужно ввести команду /register.""");
         verify(telegramClient).execute(expectedSendMessage);
     }
 }
