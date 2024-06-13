@@ -7,8 +7,8 @@ spring:
         enabled: true
       client:
         config:
-          clients:
-            url: http://localhost:8081/api/v1
+          middle-clients-service:
+            url: http://localhost:8081/api/v2
             connectTimeout: 5000
             readTimeout: 5000
             loggerLevel: basic

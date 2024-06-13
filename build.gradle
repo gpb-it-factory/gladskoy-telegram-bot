@@ -70,17 +70,13 @@ tasks.named('test') {
 
 tasks.register("middleServiceOpenApi", GenerateTask) {
 	generatorName.set("spring")
-	inputSpec.set("$rootDir/src/main/resources/openapi/middle-service-v0.0.1.yaml")
+	inputSpec.set("$rootDir/src/main/resources/openapi/middle-service.yaml")
 	outputDir.set("$rootDir/build/generated")
 	skipOverwrite = true
 	globalProperties.set([
-			apis           : "",
 			models         : "",
-			supportingFiles: 'ClientConfiguration.java'
 	])
 	configOptions.set([
-			configPackage   : "ru.gpbitfactory.minibank.middle.config",
-			apiPackage      : "ru.gpbitfactory.minibank.middle.api",
 			modelPackage    : "ru.gpbitfactory.minibank.middle.dto",
 			sourceFolder    : "middle-service/src/main/java",
 			library         : "spring-cloud",

@@ -10,16 +10,16 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage.SendMessageBu
 import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
-import ru.gpbitfactory.minibank.middle.api.ClientsApiClient;
-import ru.gpbitfactory.minibank.middle.dto.CreateClientRequest;
+import ru.gpbitfactory.minibank.middle.dto.CreateClientRequestV2;
+import ru.gpbitfactory.minibank.telegrambot.restclient.MiddleServiceClientsApiClient;
 
 @Slf4j
 @Component
 public class RegisterCommand extends BotCommand {
 
-    private final ClientsApiClient middleService;
+    private final MiddleServiceClientsApiClient middleService;
 
-    public RegisterCommand(ClientsApiClient middleService) {
+    public RegisterCommand(MiddleServiceClientsApiClient middleService) {
         super("register", "Регистрация нового клиента");
         this.middleService = middleService;
     }
@@ -32,8 +32,9 @@ public class RegisterCommand extends BotCommand {
         var responseBuilder = SendMessage.builder().chatId(chat.getId());
 
         try {
-            var createClientRequest = CreateClientRequest.builder()
+            var createClientRequest = CreateClientRequestV2.builder()
                     .telegramUserId(userId)
+                    .telegramUserName(user.getUserName())
                     .build();
             middleService.createNewClient(createClientRequest);
             responseBuilder.text("Вы успешно зарегистрированы!");

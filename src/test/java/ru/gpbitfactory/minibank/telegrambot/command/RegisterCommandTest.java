@@ -7,8 +7,9 @@ import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
-import ru.gpbitfactory.minibank.middle.api.ClientsApiClient;
 import ru.gpbitfactory.minibank.middle.dto.CreateClientRequest;
+import ru.gpbitfactory.minibank.middle.dto.CreateClientRequestV2;
+import ru.gpbitfactory.minibank.telegrambot.restclient.MiddleServiceClientsApiClient;
 import ru.gpbitfactory.minibank.telegrambot.util.MockFeignException;
 
 import static org.mockito.Mockito.mock;
@@ -18,17 +19,18 @@ import static org.springframework.http.ResponseEntity.status;
 
 class RegisterCommandTest {
 
-    private final ClientsApiClient middleService = mock(ClientsApiClient.class);
+    private final MiddleServiceClientsApiClient middleService = mock(MiddleServiceClientsApiClient.class);
     private final TelegramClient telegramClient = mock(TelegramClient.class);
 
     private static User user;
     private static Chat chat;
-    private static CreateClientRequest createClientRequest;
+    private static CreateClientRequestV2 createClientRequest;
 
     @BeforeAll
     static void beforeAll() {
         user = User.builder()
                 .id(11111L)
+                .userName("testusername")
                 .firstName("Test Name")
                 .isBot(false)
                 .build();
@@ -36,8 +38,9 @@ class RegisterCommandTest {
                 .id(22222L)
                 .type("private")
                 .build();
-        createClientRequest = CreateClientRequest.builder()
+        createClientRequest = CreateClientRequestV2.builder()
                 .telegramUserId(user.getId())
+                .telegramUserName(user.getUserName())
                 .build();
     }
 
