@@ -1,0 +1,123 @@
+openapi: 3.1.0
+
+info:
+  title: GPB IT Factory Mini-Bank Middle Service API
+  version: 0.0.2
+
+servers:
+  - url: http://localhost:8081/api
+
+paths:
+  /v1/clients:
+    post:
+      operationId: createNewClient
+      summary: Создание нового клиента
+      deprecated: true
+      tags: [clients]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateClientRequest'
+      responses:
+        200:
+          description: Клиент создан
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateClientResponse'
+        default:
+          description: Непредвиденная ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /v2/clients:
+    post:
+      operationId: createNewClientV2
+      summary: Создание нового клиента
+      tags: [ clients ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateClientRequestV2'
+      responses:
+        200:
+          description: Клиент создан
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateClientResponse'
+        default:
+          description: Непредвиденная ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    CreateClientRequest:
+      type: object
+      description: Запрос на создание нового клиента
+      properties:
+        telegramUserId:
+          description: Идентификатор пользователя в Telegram
+          type: integer
+          format: int64
+          examples:
+            - 348741706
+    CreateClientRequestV2:
+      type: object
+      description: Запрос на создание нового клиента
+      properties:
+        telegramUserId:
+          description: Идентификатор пользователя в Telegram
+          type: integer
+          format: int64
+          examples:
+            - 348741706
+        telegramUserName:
+          description: Username пользователя в Telegram
+          type: string
+          examples:
+            - admin
+      required:
+        - telegramUserId
+        - telegramUserName
+    CreateClientResponse:
+      type: object
+      description: Информация о клиенте
+      properties:
+        message:
+          type: string
+          examples:
+            - Клиент успешно зарегистрирован
+    ErrorResponse:
+      type: object
+      description: Формат непредвиденной ошибки
+      properties:
+        message:
+          type: string
+          examples:
+            - Во время выполнения запроса сервер столкнулся с непредвиденной ситуацией
+        type:
+          type: string
+          examples:
+            - InternalServerError
+        code:
+          type: string
+          examples:
+            - 500
+        traceId:
+          type: string
+          format: uuid
+          examples:
+            - 5f59e024-03c7-498d-9fc9-b8b15fd49c47
+
+tags:
+  - name: clients
+    description: Операции с клиентами
