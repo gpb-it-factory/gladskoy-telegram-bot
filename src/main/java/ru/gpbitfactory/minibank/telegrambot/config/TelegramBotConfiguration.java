@@ -9,6 +9,7 @@ import org.telegram.telegrambots.client.okhttp.OkHttpTelegramClient;
 import org.telegram.telegrambots.extensions.bots.commandbot.commands.BotCommand;
 import org.telegram.telegrambots.longpolling.TelegramBotsLongPollingApplication;
 import org.telegram.telegrambots.longpolling.interfaces.LongPollingUpdateConsumer;
+import org.telegram.telegrambots.longpolling.util.LongPollingSingleThreadUpdateConsumer;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
 import ru.gpbitfactory.minibank.telegrambot.handler.CommandsHandler;
 
@@ -27,7 +28,7 @@ public class TelegramBotConfiguration {
     }
 
     @Bean
-    public LongPollingUpdateConsumer longPollingUpdateConsumer(TelegramClient telegramClient, List<BotCommand> commands) {
+    public LongPollingSingleThreadUpdateConsumer longPollingUpdateConsumer(TelegramClient telegramClient, List<BotCommand> commands) {
         return new CommandsHandler(telegramClient, properties.isAllowCommandsWithParameters(), properties.getName(), commands);
     }
 
