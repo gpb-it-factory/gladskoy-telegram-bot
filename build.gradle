@@ -53,6 +53,7 @@ dependencies {
 	implementation 'org.telegram:telegrambots-extensions:7.2.1'
 	implementation 'org.springdoc:springdoc-openapi-ui:1.8.0'
 	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+	implementation 'io.github.openfeign:feign-okhttp:13.2.1'
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }

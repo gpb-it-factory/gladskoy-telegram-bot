@@ -48,7 +48,10 @@ components:
     CreateClientResponse:
       type: object
       description: Информация о клиенте
-        # TODO
+      properties:
+        message:
+          type: string
+          example: Клиент успешно зарегистрирован
     ErrorResponse:
       type: object
       description: Формат непредвиденной ошибки

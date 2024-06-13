@@ -23,7 +23,8 @@ public class StartCommand extends BotCommand {
 
         messageBuilder.append("Привет, ").append(userName).append("!\n");
         messageBuilder.append("Добро пожаловать в Мини-Банк.\n\n");
-        messageBuilder.append("Для того чтобы протестировать бота, введи команду /ping.");
+        messageBuilder.append("Для начала работы необходимо зарегистрироваться, ");
+        messageBuilder.append("для этого тебе нужно ввести команду /register.");
 
         var answer = new SendMessage(chat.getId().toString(), messageBuilder.toString());
         telegramClient.execute(answer);
