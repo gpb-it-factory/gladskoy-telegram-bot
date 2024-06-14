@@ -11,6 +11,7 @@ import org.telegram.telegrambots.longpolling.TelegramBotsLongPollingApplication;
 import org.telegram.telegrambots.longpolling.interfaces.LongPollingUpdateConsumer;
 import org.telegram.telegrambots.longpolling.util.LongPollingSingleThreadUpdateConsumer;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
+import ru.gpbitfactory.minibank.telegrambot.command.KeyboardButtonCallbackRegistry;
 import ru.gpbitfactory.minibank.telegrambot.handler.CommandsHandler;
 
 import java.util.List;
@@ -28,8 +29,10 @@ public class TelegramBotConfiguration {
     }
 
     @Bean
-    public LongPollingSingleThreadUpdateConsumer longPollingUpdateConsumer(TelegramClient telegramClient, List<BotCommand> commands) {
-        return new CommandsHandler(telegramClient, properties.isAllowCommandsWithParameters(), properties.getName(), commands);
+    public LongPollingSingleThreadUpdateConsumer longPollingUpdateConsumer(TelegramClient telegramClient, List<BotCommand> commands,
+                                                                           KeyboardButtonCallbackRegistry buttonCallbackRegistry) {
+        return new CommandsHandler(telegramClient, properties.isAllowCommandsWithParameters(), properties.getName(),
+                commands, buttonCallbackRegistry);
     }
 
     @Bean
