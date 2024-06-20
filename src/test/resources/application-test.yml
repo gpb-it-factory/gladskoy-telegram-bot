@@ -1,0 +1,13 @@
+logging:
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSSXXX} %clr(%5level) [%15.15t] %clr(%-45.55logger{39}){cyan} : %m%n%wEx"
+  level:
+    ru.gpbitfactory.minibank.middle.api: debug
+    ru.gpbitfactory.minibank.telegrambot:
+      command: debug
+      handler: debug
+      restclient: debug
+      service: debug
+    org:
+      telegram:
+        telegrambots: debug

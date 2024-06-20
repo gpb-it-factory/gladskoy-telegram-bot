@@ -3,6 +3,7 @@ package ru.gpbitfactory.minibank.telegrambot;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.ActiveProfiles;
 import org.telegram.telegrambots.longpolling.TelegramBotsLongPollingApplication;
 import org.telegram.telegrambots.longpolling.util.LongPollingSingleThreadUpdateConsumer;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -13,14 +14,23 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.api.objects.message.Message;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
+import ru.gpbitfactory.minibank.telegrambot.restclient.MiddleServiceClientsApiClient;
 
 import java.util.List;
 
 @SpringBootTest
+@ActiveProfiles("test")
 public abstract class AbstractUpdateConsumerTest {
+
+    protected static final long DEFAULT_USER_ID = 123;
+    protected static final long DEFAULT_CHAT_ID = 111;
+    protected static final int DEFAULT_MESSAGE_ID = 1;
 
     @MockBean
     protected TelegramClient telegramClient;
+
+    @MockBean
+    protected MiddleServiceClientsApiClient middleApiClient;
 
     @MockBean
     protected TelegramBotsLongPollingApplication telegramApplication;
@@ -29,15 +39,19 @@ public abstract class AbstractUpdateConsumerTest {
     protected LongPollingSingleThreadUpdateConsumer updateConsumer;
 
     protected Update buildUpdateMessage(String messageText, boolean isCommand) {
+        return buildUpdateMessage(DEFAULT_USER_ID, messageText, isCommand);
+    }
+
+    protected Update buildUpdateMessage(long userId, String messageText, boolean isCommand) {
         var messageBuilder = Message.builder()
-                .messageId(1)
+                .messageId(DEFAULT_MESSAGE_ID)
                 .chat(Chat.builder()
-                        .id(111L)
+                        .id(DEFAULT_CHAT_ID)
                         .type("private")
                         .build())
                 .text(messageText)
                 .from(User.builder()
-                        .id(222L)
+                        .id(userId)
                         .firstName("Test User")
                         .isBot(false)
                         .build());
@@ -57,7 +71,7 @@ public abstract class AbstractUpdateConsumerTest {
 
     protected SendMessage buildExpectedSendMessage(String text) {
         return SendMessage.builder()
-                .chatId(111L)
+                .chatId(DEFAULT_CHAT_ID)
                 .text(text)
                 .build();
     }

@@ -6,6 +6,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardRow;
 
 @UtilityClass
+@SuppressWarnings("rawtypes")
 public class KeyboardButtonBuilder {
 
     public static InlineKeyboardButton.InlineKeyboardButtonBuilder buttonBuilder(String name, String callbackId) {
@@ -15,7 +16,10 @@ public class KeyboardButtonBuilder {
     }
 
     public static InlineKeyboardMarkup.InlineKeyboardMarkupBuilder keyboardBuilder(InlineKeyboardButton... buttons) {
-        return InlineKeyboardMarkup.builder()
-                .keyboardRow(new InlineKeyboardRow(buttons));
+        var inlineKeyboardMarkupBuilder = InlineKeyboardMarkup.builder();
+        if (buttons.length != 0) {
+            inlineKeyboardMarkupBuilder.keyboardRow(new InlineKeyboardRow(buttons));
+        }
+        return inlineKeyboardMarkupBuilder;
     }
 }

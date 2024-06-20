@@ -7,7 +7,6 @@ import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
-import ru.gpbitfactory.minibank.middle.dto.CreateClientRequest;
 import ru.gpbitfactory.minibank.middle.dto.CreateClientRequestV2;
 import ru.gpbitfactory.minibank.telegrambot.restclient.MiddleServiceClientsApiClient;
 import ru.gpbitfactory.minibank.telegrambot.util.MockFeignException;
