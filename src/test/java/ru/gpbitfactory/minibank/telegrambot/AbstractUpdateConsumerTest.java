@@ -1,5 +1,6 @@
 package ru.gpbitfactory.minibank.telegrambot;
 
+import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -13,10 +14,13 @@ import org.telegram.telegrambots.meta.api.objects.MessageEntity;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.api.objects.message.Message;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
 import ru.gpbitfactory.minibank.telegrambot.restclient.MiddleServiceClientsApiClient;
 
 import java.util.List;
+
+import static org.mockito.Mockito.verify;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -37,6 +41,19 @@ public abstract class AbstractUpdateConsumerTest {
 
     @Autowired
     protected LongPollingSingleThreadUpdateConsumer updateConsumer;
+
+    protected SendMessage consumeCommandAndCaptureSendMessage(String command) throws TelegramApiException {
+        consumeCommand(command);
+
+        var sendMessageCaptor = ArgumentCaptor.forClass(SendMessage.class);
+        verify(telegramClient).execute(sendMessageCaptor.capture());
+        return sendMessageCaptor.getValue();
+    }
+
+    protected void consumeCommand(String command) {
+        var updateMessage = buildUpdateMessage(command, true);
+        updateConsumer.consume(updateMessage);
+    }
 
     protected Update buildUpdateMessage(String messageText, boolean isCommand) {
         return buildUpdateMessage(DEFAULT_USER_ID, messageText, isCommand);
