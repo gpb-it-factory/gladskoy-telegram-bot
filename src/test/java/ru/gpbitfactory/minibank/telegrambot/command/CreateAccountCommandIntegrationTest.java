@@ -76,6 +76,7 @@ class CreateAccountCommandIntegrationTest extends AbstractUpdateConsumerTest {
         configureMiddleApiClientMockWithEmptyResponseBodyOfGetClient(List.of(account));
 
         var sendMessage = consumeCommandAndCaptureSendMessage(CREATEACCOUNT_COMMAND);
+
         assertThatSendMessageContainsConfirmationButtonBlock(sendMessage);
     }
 
@@ -85,6 +86,7 @@ class CreateAccountCommandIntegrationTest extends AbstractUpdateConsumerTest {
         configureMiddleApiClientMockWithResponseBodyContainsAccounts();
 
         var sendMessage = consumeCommandAndCaptureSendMessage(CREATEACCOUNT_COMMAND);
+
         assertThatSendMessageContainsListOfAvailableAccounts(sendMessage);
     }
 
@@ -94,6 +96,7 @@ class CreateAccountCommandIntegrationTest extends AbstractUpdateConsumerTest {
         configureMiddleApiClientMockWithGetClientThrowingFeignException();
 
         var sendMessage = consumeCommandAndCaptureSendMessage(CREATEACCOUNT_COMMAND);
+
         assertThat(sendMessage.getText()).isEqualTo(
                 "Ты ещё не зарегистрирован! Чтобы зарегистрироваться нажми на /register."
         );
@@ -105,6 +108,7 @@ class CreateAccountCommandIntegrationTest extends AbstractUpdateConsumerTest {
         configureMiddleApiClientMockWithEmptyResponseBodyOfGetClient(List.of());
 
         var sendMessage = consumeCommandAndCaptureSendMessage(CREATEACCOUNT_COMMAND);
+
         assertThat(sendMessage.getText()).isEqualTo("Сервис временно недоступен, повтори попытку позже");
     }
 
@@ -112,9 +116,10 @@ class CreateAccountCommandIntegrationTest extends AbstractUpdateConsumerTest {
     @DisplayName("Во время регистрации счёта в Middle Service возникла ошибка")
     void whenErrorOccurredDuringAccountRegistration_thenShouldReturnErrorResponse() throws TelegramApiException {
         configureMiddleApiClientMockWithCreateAccountThrowingFeignException();
-        clickOnTheNextButton();
 
+        clickOnTheNextButton();
         var editMessage = consumeCallbackQueryAndCaptureEditMessage();
+
         assertThat(editMessage.getText()).isEqualTo("Сервис временно недоступен, повтори попытку позже");
     }
 
@@ -122,9 +127,10 @@ class CreateAccountCommandIntegrationTest extends AbstractUpdateConsumerTest {
     @DisplayName("Открытие счёта для клиента, у которого нет не одного открытого счёта")
     void whenClientDoesntHaveRegisteredAccount_thenShouldRegisterPromoAccount() throws TelegramApiException {
         configureMiddleApiClientMockWithSuccessResponseBodyOfCreateAccount();
-        consumeCommand(CREATEACCOUNT_COMMAND);
 
+        consumeCommand(CREATEACCOUNT_COMMAND);
         var editMessage = consumeCallbackQueryAndCaptureEditMessage();
+
         assertThat(editMessage.getText()).containsSubsequence(
                 "Счёт 'Акционный' успешно открыт!", "Тебе зачислено 1000.0 бонусных рублей!",
                 "Деньгами можно воспользоваться прямо сейчас. Для того, чтобы ознакомиться со списком доступных операций, введи команду /help."
