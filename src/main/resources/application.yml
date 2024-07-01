@@ -8,7 +8,7 @@ spring:
       client:
         config:
           middle-clients-service:
-            url: http://localhost:8081/api/v2
+            url: http://localhost:8081/api
             connectTimeout: 5000
             readTimeout: 5000
             loggerLevel: basic
@@ -17,10 +17,11 @@ logging:
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss.SSSXXX} %clr(%5level) [%15.15t] %clr(%-45.55logger{39}){cyan} : %m%n%wEx"
   level:
-    ru.gpbitfactory.minibank.middle.api: debug
     ru.gpbitfactory.minibank.telegrambot:
       command: info
       handler: info
+      restclient: debug
+      service: info
     org:
       telegram:
         telegrambots: debug

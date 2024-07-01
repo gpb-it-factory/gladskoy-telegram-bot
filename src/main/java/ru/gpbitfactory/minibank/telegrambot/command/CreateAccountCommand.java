@@ -1,86 +1,69 @@
 package ru.gpbitfactory.minibank.telegrambot.command;
 
-import feign.FeignException;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.extensions.bots.commandbot.commands.BotCommand;
-import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
-import org.telegram.telegrambots.meta.api.methods.botapimethods.BotApiMethod;
-import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.User;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
-import ru.gpbitfactory.minibank.telegrambot.util.EditMessageBuilder;
-import ru.gpbitfactory.minibank.telegrambot.util.KeyboardButtonBuilder;
+import ru.gpbitfactory.minibank.middle.dto.AccountResponse;
+import ru.gpbitfactory.minibank.telegrambot.service.CreateAccountService;
+import ru.gpbitfactory.minibank.telegrambot.service.MiddleApiService;
 import ru.gpbitfactory.minibank.telegrambot.util.SendMessageBuilder;
 
-import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 @Slf4j
 @Component
 public class CreateAccountCommand extends BotCommand {
 
-    private final KeyboardButtonCallbackRegistry buttonCallbackRegistry;
+    private final Predicate<AccountResponse> accountForNewClient = account -> account.getType().equals(AccountResponse.TypeEnum.PROMO);
+    private final CreateAccountService createAccountService;
+    private final MiddleApiService middleApiService;
 
-    public CreateAccountCommand(KeyboardButtonCallbackRegistry buttonCallbackRegistry) {
+    public CreateAccountCommand(MiddleApiService middleApiService, CreateAccountService createAccountService) {
         super("createaccount", "Открытие счёта в Мини-банке");
-        this.buttonCallbackRegistry = buttonCallbackRegistry;
+        this.middleApiService = middleApiService;
+        this.createAccountService = createAccountService;
     }
 
     @Override
     @SneakyThrows
     public void execute(TelegramClient telegramClient, User user, Chat chat, String[] strings) {
-        var nextButton = KeyboardButtonBuilder.buttonBuilder("ДАЛЕЕ", "createAccountNext").build();
-        buttonCallbackRegistry.register(nextButton.getCallbackData(), createNextButtonAction(telegramClient));
+        long userId = user.getId();
+        long chatId = chat.getId();
+        log.info("Поступил запрос на открытие счёта для клиента {}", userId);
+        var responseBuilder = SendMessageBuilder.of(chatId);
 
-        var cancelButton = KeyboardButtonBuilder.buttonBuilder("ОТМЕНА", "createAccountCancel").build();
-        buttonCallbackRegistry.register(cancelButton.getCallbackData(), createCancelButtonAction(telegramClient));
+        var client = middleApiService.getClient(userId);
+        if (client.isEmpty()) {
+            log.warn("Клиент userId: {} ещё на зарегистрирован", userId);
+            responseBuilder.text("Ты ещё не зарегистрирован! Чтобы зарегистрироваться нажми на /register.");
+            telegramClient.execute(responseBuilder.build());
+            return;
+        }
 
-        var buttonBlock = KeyboardButtonBuilder.keyboardBuilder(nextButton, cancelButton).build();
-        var responseBuilder = SendMessageBuilder.of(chat.getId(), buttonBlock);
-        responseBuilder.text("Для подтверждения открытия счёта необходимо нажать на кнопку \"Далее\"");
-        telegramClient.execute(responseBuilder.build());
-    }
+        var availableAccounts = middleApiService.getAvailableAccounts();
+        if (availableAccounts.isEmpty()) {
+            log.warn("В Middle Service нет счетов, доступных для открытия, отправляем сообщение клиенту");
+            responseBuilder.text("Сервис временно недоступен, повтори попытку позже");
+            telegramClient.execute(responseBuilder.build());
+            return;
+        }
 
-    private Consumer<CallbackQuery> createNextButtonAction(TelegramClient telegramClient) {
-        return callbackQuery -> {
-            try {
-                // TODO научиться открывать счёт в Middle Service: https://github.com/gpb-it-factory/gladskoy-telegram-bot/issues/34
-                var responseBuilder = EditMessageBuilder.of(callbackQuery);
-                responseBuilder.text("""
-                        Счёт успешно открыт! Тебе зачислено 5000 бонусных рублей!
-                                            
-                        Деньгами можно воспользоваться прямо сейчас. Для того чтобы ознакомиться со списком доступных
-                        операций, введи команду /help.
-                        """);
-                sendResponse(telegramClient, callbackQuery.getId(), responseBuilder.build());
-            } catch (FeignException e) {
-                log.error("Во время создания счёта возникла непредвиденная ситуация", e);
-            }
-        };
-    }
-
-    private Consumer<CallbackQuery> createCancelButtonAction(TelegramClient telegramClient) {
-        return callbackQuery -> {
-            var responseBuilder = EditMessageBuilder.of(callbackQuery);
-            responseBuilder.text("Операция отменена. Если это произошло случайно, введи команду /createaccount снова.");
-            sendResponse(telegramClient, callbackQuery.getId(), responseBuilder.build());
-        };
-    }
-
-    private void sendResponse(TelegramClient telegramClient, String callbackQueryId, BotApiMethod<?> responseMessage) {
-        // На каждое сообщение CallbackQuery необходимо отправлять ответ AnswerCallbackQuery.
-        // Иначе нажатая кнопка продолжит находиться в состоянии ожидания (в UI она будет "мигать").
-        var callbackAnswer = AnswerCallbackQuery.builder()
-                .callbackQueryId(callbackQueryId)
-                .build();
-        try {
-            telegramClient.execute(callbackAnswer);
-            telegramClient.execute(responseMessage);
-        } catch (TelegramApiException e) {
-            log.error("Во время отправки ответа клиенту возникла непредвиденная ситуация", e);
+        var clientAccounts = middleApiService.getClientAccounts(userId);
+        if (clientAccounts.isEmpty()) {
+            log.info("У клиента нет открытых счетов, поэтому пробуем открыть ему один из доступных счетов");
+            availableAccounts.stream()
+                    .filter(accountForNewClient)
+                    .findFirst()
+                    .or(availableAccounts.stream()::findAny)
+                    .ifPresent(createAccountService.sendConfirmationButtonsBlock(userId, chatId));
+        } else {
+            log.info("У клиента уже есть открытые счета, поэтому предлагаем ему открыть ещё один счёт");
+            var accountsExceptForNewClient = availableAccounts.stream().filter(accountForNewClient.negate()).toList();
+            createAccountService.sendAccountButtonsBlock(accountsExceptForNewClient, userId, chatId);
         }
     }
 }
