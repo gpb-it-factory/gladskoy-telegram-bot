@@ -1,5 +1,7 @@
 package ru.gpbitfactory.minibank.telegrambot.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -9,6 +11,8 @@ import ru.gpbitfactory.minibank.middle.dto.AccountResponse;
 import ru.gpbitfactory.minibank.middle.dto.ClientAccount;
 import ru.gpbitfactory.minibank.middle.dto.ClientResponse;
 import ru.gpbitfactory.minibank.middle.dto.CreateClientAccountRequest;
+import ru.gpbitfactory.minibank.middle.dto.CreateTransferRequest;
+import ru.gpbitfactory.minibank.middle.dto.CreateTransferResponse;
 import ru.gpbitfactory.minibank.telegrambot.restclient.MiddleServiceClientsApiClient;
 
 import java.util.List;
@@ -20,6 +24,7 @@ import java.util.Optional;
 public class MiddleApiService {
 
     private final MiddleServiceClientsApiClient middleServiceClientsApiClient;
+    private final ObjectMapper objectMapper;
 
     public List<AccountResponse> getAvailableAccounts() {
         log.debug("Запрашиваем в Middle Service счета, доступные для открытия");
@@ -29,7 +34,7 @@ public class MiddleApiService {
                 log.debug("Найдено {} счетов, доступных для открытия", responseBody.size());
                 return responseBody;
             }
-        } catch (Exception e) {
+        } catch (FeignException e) {
             log.error("Не удалось получить  счета, доступные для открытия", e);
         }
         return List.of();
@@ -43,7 +48,7 @@ public class MiddleApiService {
                 log.debug("У клиента userId: {} открыто {} счетов", userId, responseBody.getAccounts().size());
                 return responseBody.getAccounts();
             }
-        } catch (Exception e) {
+        } catch (FeignException e) {
             log.error("Не удалось получить данные об открытых счетах клиента userId: {}", userId, e);
         }
         return List.of();
@@ -70,9 +75,22 @@ public class MiddleApiService {
                 log.debug(responseBody.getMessage());
                 return true;
             }
-        } catch (Exception e) {
+        } catch (FeignException e) {
             log.error("Не удалось открыть счёт {} для клиента userId: {}", request.getAccountName(), userId, e);
         }
         return false;
+    }
+
+    public CreateTransferResponse createMoneyTransfer(CreateTransferRequest createTransferRequest) throws JsonProcessingException {
+        var fromUsername = createTransferRequest.getFrom();
+        var toUsername = createTransferRequest.getTo();
+
+        log.debug("Отправляем запрос в Middle Service на перевод средств от клиента {} клиенту {}", fromUsername, toUsername);
+        try {
+            return middleServiceClientsApiClient.createTransfer(createTransferRequest).getBody();
+        } catch (FeignException e) {
+            log.error("Не удалось перевести средства от клиента {} клиенту {}", fromUsername, toUsername, e);
+            return objectMapper.readValue(e.contentUTF8(), CreateTransferResponse.class);
+        }
     }
 }

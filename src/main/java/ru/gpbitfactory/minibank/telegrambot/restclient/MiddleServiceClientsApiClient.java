@@ -12,6 +12,8 @@ import ru.gpbitfactory.minibank.middle.dto.ClientResponse;
 import ru.gpbitfactory.minibank.middle.dto.CreateClientAccountRequest;
 import ru.gpbitfactory.minibank.middle.dto.CreateClientAccountResponse;
 import ru.gpbitfactory.minibank.middle.dto.CreateClientRequestV2;
+import ru.gpbitfactory.minibank.middle.dto.CreateTransferRequest;
+import ru.gpbitfactory.minibank.middle.dto.CreateTransferResponse;
 
 import java.util.List;
 
@@ -30,4 +32,7 @@ public interface MiddleServiceClientsApiClient {
 
     @GetMapping("/v1/accounts")
     ResponseEntity<List<AccountResponse>> getAvailableAccounts();
+
+    @PostMapping("/v1/transfers")
+    ResponseEntity<CreateTransferResponse> createTransfer(@RequestBody @Valid CreateTransferRequest createTransferRequest);
 }
