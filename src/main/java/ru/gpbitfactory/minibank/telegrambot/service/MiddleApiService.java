@@ -9,6 +9,7 @@ import ru.gpbitfactory.minibank.middle.dto.AccountResponse;
 import ru.gpbitfactory.minibank.middle.dto.ClientAccount;
 import ru.gpbitfactory.minibank.middle.dto.ClientResponse;
 import ru.gpbitfactory.minibank.middle.dto.CreateClientAccountRequest;
+import ru.gpbitfactory.minibank.middle.dto.CreateClientRequestV2;
 import ru.gpbitfactory.minibank.telegrambot.restclient.MiddleServiceClientsApiClient;
 
 import java.util.List;
@@ -29,7 +30,7 @@ public class MiddleApiService {
                 log.debug("Найдено {} счетов, доступных для открытия", responseBody.size());
                 return responseBody;
             }
-        } catch (Exception e) {
+        } catch (FeignException e) {
             log.error("Не удалось получить  счета, доступные для открытия", e);
         }
         return List.of();
@@ -43,7 +44,7 @@ public class MiddleApiService {
                 log.debug("У клиента userId: {} открыто {} счетов", userId, responseBody.getAccounts().size());
                 return responseBody.getAccounts();
             }
-        } catch (Exception e) {
+        } catch (FeignException e) {
             log.error("Не удалось получить данные об открытых счетах клиента userId: {}", userId, e);
         }
         return List.of();
@@ -70,8 +71,22 @@ public class MiddleApiService {
                 log.debug(responseBody.getMessage());
                 return true;
             }
-        } catch (Exception e) {
+        } catch (FeignException e) {
             log.error("Не удалось открыть счёт {} для клиента userId: {}", request.getAccountName(), userId, e);
+        }
+        return false;
+    }
+
+    public boolean createNewClient(CreateClientRequestV2 request) {
+        log.debug("Отправляем в Middle Service запрос на регистрацию клиента userId: {}", request.getTelegramUserId());
+        try {
+            var responseBody = middleServiceClientsApiClient.createNewClient(request).getBody();
+            if (responseBody != null) {
+                log.debug(responseBody.getMessage());
+                return true;
+            }
+        } catch (FeignException e) {
+            log.error("Не удалось зарегистрировать клиента userId: {}", request.getTelegramUserId(), e);
         }
         return false;
     }

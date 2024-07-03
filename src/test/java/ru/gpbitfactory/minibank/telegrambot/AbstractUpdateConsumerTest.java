@@ -27,6 +27,7 @@ import static org.mockito.Mockito.verify;
 public abstract class AbstractUpdateConsumerTest {
 
     protected static final long DEFAULT_USER_ID = 123;
+    protected static final String DEFAULT_USERNAME = "testUser";
     protected static final long DEFAULT_CHAT_ID = 111;
     protected static final int DEFAULT_MESSAGE_ID = 1;
 
@@ -69,6 +70,7 @@ public abstract class AbstractUpdateConsumerTest {
                 .text(messageText)
                 .from(User.builder()
                         .id(userId)
+                        .userName(DEFAULT_USERNAME)
                         .firstName("Test User")
                         .isBot(false)
                         .build());
