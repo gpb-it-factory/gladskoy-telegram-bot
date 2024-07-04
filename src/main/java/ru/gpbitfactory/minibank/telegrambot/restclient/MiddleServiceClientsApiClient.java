@@ -12,6 +12,7 @@ import ru.gpbitfactory.minibank.middle.dto.ClientResponse;
 import ru.gpbitfactory.minibank.middle.dto.CreateClientAccountRequest;
 import ru.gpbitfactory.minibank.middle.dto.CreateClientAccountResponse;
 import ru.gpbitfactory.minibank.middle.dto.CreateClientRequestV2;
+import ru.gpbitfactory.minibank.middle.dto.CreateClientResponse;
 
 import java.util.List;
 
@@ -19,7 +20,7 @@ import java.util.List;
 public interface MiddleServiceClientsApiClient {
 
     @PostMapping("/v2/clients")
-    ResponseEntity<Void> createNewClient(@RequestBody @Valid CreateClientRequestV2 createUserRequest);
+    ResponseEntity<CreateClientResponse> createNewClient(@RequestBody @Valid CreateClientRequestV2 createUserRequest);
 
     @GetMapping("/v1/clients/{telegramId}")
     ResponseEntity<ClientResponse> getClient(@PathVariable long telegramId);
