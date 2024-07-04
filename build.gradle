@@ -112,3 +112,7 @@ project.tasks {
 		dependsOn('middleServiceOpenApi')
 	}
 }
+
+processResources {
+	exclude('*-dev.yml', 'openapi', 'project')
+}
