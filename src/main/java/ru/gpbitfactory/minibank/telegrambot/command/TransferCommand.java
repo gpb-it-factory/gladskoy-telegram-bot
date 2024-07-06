@@ -103,10 +103,10 @@ public class TransferCommand extends BotCommand {
 
     private BigDecimal toBigDecimal(String amount) {
         try {
-            var longValue = Long.parseLong(amount);
-            return BigDecimal.valueOf(longValue);
+            var doubleValue = Double.parseDouble(amount);
+            return BigDecimal.valueOf(doubleValue);
         } catch (NumberFormatException e) {
-            throw new AmountArgumentNotValidException("Аргумент amount не является числом");
+            throw new AmountArgumentNotValidException("Значение суммы перевода не является числом");
         }
     }
 }

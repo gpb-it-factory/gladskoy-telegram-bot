@@ -35,10 +35,10 @@ class TransferCommandIntegrationTest extends AbstractUpdateConsumerTest {
     @Test
     @DisplayName("Успешный перевод")
     void whenCommandArgumentsAreValid_thenShouldSentToTelegramUserSuccessMessage() throws TelegramApiException {
-        var transferAmount = BigDecimal.valueOf(1000);
+        var transferAmount = BigDecimal.valueOf(1000.0);
         configureMiddleApiClientMockWithSuccessResponseBody("Перевод успешно осуществлён", transferAmount);
 
-        var command = buildCommand(TRANSFER_COMMAND, TRANSFER_TO_USERNAME, transferAmount.toString());
+        var command = buildCommand(TRANSFER_COMMAND, TRANSFER_TO_USERNAME, "1000");
         var sendMessage = consumeCommandAndCaptureSendMessage(command);
 
         assertThatSendMessageIsEqualTo(sendMessage, "Перевод успешно осуществлён");
@@ -74,7 +74,7 @@ class TransferCommandIntegrationTest extends AbstractUpdateConsumerTest {
         var command = buildCommand(TRANSFER_COMMAND, TRANSFER_TO_USERNAME, "123fake");
         var sendMessage = consumeCommandAndCaptureSendMessage(command);
 
-        assertThatSendMessageIsEqualTo(sendMessage, "Аргумент amount не является числом");
+        assertThatSendMessageIsEqualTo(sendMessage, "Значение суммы перевода не является числом");
     }
 
     @Test
@@ -108,7 +108,7 @@ class TransferCommandIntegrationTest extends AbstractUpdateConsumerTest {
         var transferAmount = BigDecimal.valueOf(5001);
         configureMiddleApiClientMockWithSuccessResponseBody("Успех", transferAmount);
 
-        var command = buildCommand(TRANSFER_COMMAND, TRANSFER_TO_USERNAME, transferAmount.toString());
+        var command = buildCommand(TRANSFER_COMMAND, TRANSFER_TO_USERNAME, "5001");
         var sendMessage = consumeCommandAndCaptureSendMessage(command);
 
         assertThatSendMessageIsEqualTo(sendMessage,
@@ -119,10 +119,10 @@ class TransferCommandIntegrationTest extends AbstractUpdateConsumerTest {
     @Test
     @DisplayName("Получатель перевода не зарегистрирован")
     void whenRecipientOfTheTransferIsNotRegistered_thenShouldSendToUserErrorMessage() throws TelegramApiException {
-        var transferAmount = BigDecimal.valueOf(1000);
+        var transferAmount = BigDecimal.valueOf(1000.0);
         configureMiddleApiClientMockWithCreateTransferError(transferAmount);
 
-        var command = buildCommand(TRANSFER_COMMAND, TRANSFER_TO_USERNAME, transferAmount.toString());
+        var command = buildCommand(TRANSFER_COMMAND, TRANSFER_TO_USERNAME, "1000");
         var sendMessage = consumeCommandAndCaptureSendMessage(command);
 
         assertThatSendMessageIsEqualTo(sendMessage, "Клиент toUsername не зарегистрирован");
