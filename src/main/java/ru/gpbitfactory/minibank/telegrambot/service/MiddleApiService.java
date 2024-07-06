@@ -13,6 +13,7 @@ import ru.gpbitfactory.minibank.middle.dto.ClientResponse;
 import ru.gpbitfactory.minibank.middle.dto.CreateClientAccountRequest;
 import ru.gpbitfactory.minibank.middle.dto.CreateTransferRequest;
 import ru.gpbitfactory.minibank.middle.dto.CreateTransferResponse;
+import ru.gpbitfactory.minibank.middle.dto.CreateClientRequestV2;
 import ru.gpbitfactory.minibank.telegrambot.restclient.MiddleServiceClientsApiClient;
 
 import java.util.List;
@@ -92,5 +93,19 @@ public class MiddleApiService {
             log.error("Не удалось перевести средства от клиента {} клиенту {}", fromUsername, toUsername, e);
             return objectMapper.readValue(e.contentUTF8(), CreateTransferResponse.class);
         }
+    }
+
+    public boolean createNewClient(CreateClientRequestV2 request) {
+        log.debug("Отправляем в Middle Service запрос на регистрацию клиента userId: {}", request.getTelegramUserId());
+        try {
+            var responseBody = middleServiceClientsApiClient.createNewClient(request).getBody();
+            if (responseBody != null) {
+                log.debug(responseBody.getMessage());
+                return true;
+            }
+        } catch (FeignException e) {
+            log.error("Не удалось зарегистрировать клиента userId: {}", request.getTelegramUserId(), e);
+        }
+        return false;
     }
 }
