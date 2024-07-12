@@ -2,7 +2,7 @@ openapi: 3.1.0
 
 info:
   title: GPB IT Factory Mini-Bank Middle Service API
-  version: 0.2.1
+  version: 0.3.1
 
 servers:
   - url: http://localhost:8081/api
@@ -129,7 +129,36 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-
+  /v1/transfers:
+    post:
+      operationId: createTransfer
+      summary: Создать перевод между счетами клиентов
+      tags: [ transfers ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTransferRequest'
+      responses:
+        201:
+          description: Счёт успешно открыт
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateTransferResponse'
+        422:
+          description: В запросе содержится недопустимый контент
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        default:
+          description: Непредвиденная ошибка
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 components:
   schemas:
     CreateClientRequest:
@@ -170,6 +199,27 @@ components:
             - Акционный
       required:
         - accountName
+    CreateTransferRequest:
+      type: object
+      description: Запрос на перевод со счёта одно пользователя на счёт другого пользователя
+      properties:
+        from:
+          type: string
+          examples:
+            - fromuser
+        to:
+          type: string
+          examples:
+            - touser
+        amount:
+          type: string
+          format: number
+          examples:
+            - 12345.67
+      required:
+        - from
+        - to
+        - amount
     CreateClientResponse:
       type: object
       description: Информация о успешной регистрации клиента
@@ -241,6 +291,14 @@ components:
       required:
         - name
         - type
+    CreateTransferResponse:
+      type: object
+      description: Информация об успешном переводе между счетами
+      properties:
+        message:
+          type: string
+          examples:
+            - Перевод успешно совершён
     ErrorResponse:
       type: object
       description: Формат непредвиденной ошибки
@@ -277,3 +335,7 @@ components:
 tags:
   - name: clients
     description: Операции с клиентами
+  - name: accounts
+    description: Операции со счетами клиентов
+  - name: transfers
+    description: Операции между счетами клиентов
